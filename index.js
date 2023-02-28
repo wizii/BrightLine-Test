@@ -13,7 +13,6 @@
 
     function setupGrid(videos) {
         let grid = document.getElementById('grid');
-        console.log(videos)
         for (let [index, video] of videos.entries()) {
             let gridItem = document.createElement('div');
             gridItem.className = 'grid__item';
@@ -24,25 +23,21 @@
             nameDiv.className = 'name';
             gridItem.appendChild(nameDiv);
             grid.appendChild(gridItem);
-            console.log(video.name)
         }
     }
 
-    let focusedItemIndex = 0;
+    let focusedItemIndex = -1;
 
     window.addEventListener('keydown', (e) => {
+        e.preventDefault();
         if (e.code === "ArrowLeft") 
             move('left');
         else if (e.code === "ArrowUp")
-        console.log('move up');
-
-            // moveUp();
-        else if (e.code === "ArrowRight") // right
+            move('up');
+        else if (e.code === "ArrowRight")
             move('right')
         else if (e.code === "ArrowDown")
-        console.log('move down');
-
-            // moveDown();
+            move('down');
         else if (e.code === "Enter")
             playVideo();
         else if (e.code === "Backspace")
@@ -50,19 +45,28 @@
     }, true);
     
     function move(direction) {
-        console.log(focusedItemIndex)
         if(direction === 'right') {
-            if (focusedItemIndex === videos.length) {
-                focusedItemIndex = 0;
+            if (focusedItemIndex === videos.length || focusedItemIndex === videos.length -1) {
+                focusedItemIndex = -1;
             }
-            document.getElementById(focusedItemIndex).focus();
             focusedItemIndex++;
-        } else if (direction === 'left') {
-            if (focusedItemIndex === -1) {
-                focusedItemIndex = videos.length - 1;
-            }
             document.getElementById(focusedItemIndex).focus();
+        } else if (direction === 'left') {
+            if (focusedItemIndex === -1 || focusedItemIndex === 0) {
+                focusedItemIndex = videos.length;
+            }
             focusedItemIndex--;
+            document.getElementById(focusedItemIndex).focus();
+        } else if (direction === 'up') {
+            if( focusedItemIndex > 2) {
+                focusedItemIndex = focusedItemIndex - 3;
+                document.getElementById(focusedItemIndex).focus();
+            }
+        } else if(direction === 'down') {
+            if (focusedItemIndex <= videos.length - 2) {
+                focusedItemIndex = focusedItemIndex + 3;
+                document.getElementById(focusedItemIndex).focus();
+            }
         }
     }
 
@@ -71,10 +75,8 @@
         grid.style.display = 'none';
         let videoElement = document.getElementById('video');
         videoElement.style.display = 'block';
-        // videoElement.requestFullscreen();
         let video = videos[focusedItemIndex];
         videoElement.src = video.mediaFile;
-        console.log(video)
     }
 
     function hideVideo() {
